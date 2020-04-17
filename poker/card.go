@@ -60,6 +60,11 @@ type Card struct {
 	value CardValue
 }
 
+const (
+	NumCardValues = 13
+	NumSuits = 4
+)
+
 func CardCompare(lhs Card, rhs Card) int32 {
 	if lhs.value < rhs.value {
 		return -1

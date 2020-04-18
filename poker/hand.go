@@ -194,45 +194,45 @@ func SolveHand(cards []Card) (Hand, error) {
 	straightFlush, flush := solveForStraightFlushOrFlush(cards)
 
 	if straightFlush != nil {
-		return straightFlush, nil
+		return *straightFlush, nil
 	}
 
 	if len(highPairs) == 4 {
 		if len(lowPairs) == 0 {
-			return &FourKind{fourPair: highPairs, kicker: kickers[0]}, nil
+			return FourKind{fourPair: highPairs, kicker: kickers[0]}, nil
 		} else if len(kickers) == 0 {
-			return &FourKind{fourPair: highPairs, kicker: lowPairs[0]}, nil
+			return FourKind{fourPair: highPairs, kicker: lowPairs[0]}, nil
 		} else if lowPairs[0].value < kickers[0].value {
-			return &FourKind{fourPair: highPairs, kicker: kickers[0]}, nil
+			return FourKind{fourPair: highPairs, kicker: kickers[0]}, nil
 		} else {
-			return &FourKind{fourPair: highPairs, kicker: lowPairs[0]}, nil
+			return FourKind{fourPair: highPairs, kicker: lowPairs[0]}, nil
 		}
 	}
 
 	if len(highPairs) == 3 && len(lowPairs) == 2 {
-		return &FullHouse{threePair: highPairs, twoPair: lowPairs}, nil
+		return FullHouse{threePair: highPairs, twoPair: lowPairs}, nil
 	}
 
 	if flush != nil {
-		return flush, nil
+		return *flush, nil
 	}
 
 	straight := solveForStraight(cards)
 	if straight != nil {
-		return straight, nil
+		return *straight, nil
 	}
 
 	if len(highPairs) == 3 {
-		return &ThreeKind{threePair: highPairs, kickers: kickers[:2]}, nil
+		return ThreeKind{threePair: highPairs, kickers: kickers[:2]}, nil
 	}
 
 	if len(highPairs) == 2 && len(lowPairs) == 2 {
-		return &TwoPair{highPair: highPairs, lowPair: lowPairs, kicker: kickers[0]}, nil
+		return TwoPair{highPair: highPairs, lowPair: lowPairs, kicker: kickers[0]}, nil
 	}
 
 	if len(highPairs) == 2 {
-		return &Pair{pair: highPairs, kickers: kickers[:3]}, nil
+		return Pair{pair: highPairs, kickers: kickers[:3]}, nil
 	}
 
-	return &HighCard{sortedCards: kickers[:5]}, nil
+	return HighCard{sortedCards: kickers[:5]}, nil
 }

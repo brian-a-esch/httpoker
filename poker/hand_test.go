@@ -81,7 +81,7 @@ func cardsMakePair(cards []Card, value CardValue, expectedLength int) bool {
 func TestHighCardBasic(t *testing.T) {
 	cards := buildCards([]string{"2H", "4C", "8D", "TS", "AS", "3H", "9C"})
 	hand, _ := SolveHand(cards)
-	highCard := hand.(*HighCard)
+	highCard := hand.(HighCard)
 
 	expected := buildCards([]string{"AS", "TS", "9C", "8D", "4C"})
 	if !reflect.DeepEqual(highCard.sortedCards, expected) {
@@ -96,7 +96,7 @@ func TestHighCardBasic(t *testing.T) {
 func TestFlushBasic(t *testing.T) {
 	cards := buildCards([]string{"AS", "2S", "4S", "8S", "TS"})
 	hand, _ := SolveHand(cards)
-	flush := hand.(*Flush)
+	flush := hand.(Flush)
 
 	expected := buildCards([]string{"AS", "TS", "8S", "4S", "2S"})
 
@@ -112,7 +112,7 @@ func TestFlushBasic(t *testing.T) {
 func TestFlushLong(t *testing.T) {
 	cards := buildCards([]string{"AS", "2S", "4S", "8S", "TS", "3S", "9S"})
 	hand, _ := SolveHand(cards)
-	flush := hand.(*Flush)
+	flush := hand.(Flush)
 
 	expected := buildCards([]string{"AS", "TS", "9S", "8S", "4S"})
 	if !reflect.DeepEqual(expected, flush.sortedCards) {
@@ -123,7 +123,7 @@ func TestFlushLong(t *testing.T) {
 func TestStraightBasic(t *testing.T) {
 	cards := buildCards([]string{"2H", "3C", "6S", "TS", "QC", "4D", "5D"})
 	hand, _ := SolveHand(cards)
-	straight := hand.(*Straight)
+	straight := hand.(Straight)
 
 	expected := buildCards([]string{"6S", "5D", "4D", "3C", "2H"})
 	if !reflect.DeepEqual(expected, straight.sortedCards) {
@@ -138,7 +138,7 @@ func TestStraightBasic(t *testing.T) {
 func TestStraightDuplicateCards(t *testing.T) {
 	cards := buildCards([]string{"2H", "3C", "6S", "TS", "5S", "4D", "5D"})
 	hand, _ := SolveHand(cards)
-	straight := hand.(*Straight)
+	straight := hand.(Straight)
 
 	possibility1 := buildCards([]string{"6S", "5S", "4D", "3C", "2H"})
 	possibility2 := buildCards([]string{"6S", "5D", "4D", "3C", "2H"})
@@ -151,7 +151,7 @@ func TestStraightDuplicateCards(t *testing.T) {
 func TestStraightLong(t *testing.T) {
 	cards := buildCards([]string{"2H", "3C", "6S", "8S", "4D", "5D", "7H"})
 	hand, _ := SolveHand(cards)
-	straight := hand.(*Straight)
+	straight := hand.(Straight)
 
 	expected := buildCards([]string{"8S", "7H", "6S", "5D", "4D"})
 	if !reflect.DeepEqual(straight.sortedCards, expected) {
@@ -162,7 +162,7 @@ func TestStraightLong(t *testing.T) {
 func TestStraightAceLow(t *testing.T) {
 	cards := buildCards([]string{"2H", "3C", "AS", "TS", "QC", "4D", "5D"})
 	hand, _ := SolveHand(cards)
-	straight := hand.(*Straight)
+	straight := hand.(Straight)
 
 	expected := buildCards([]string{"5D", "4D", "3C", "2H", "AS"})
 	if !reflect.DeepEqual(straight.sortedCards, expected) {
@@ -173,7 +173,7 @@ func TestStraightAceLow(t *testing.T) {
 func TestStraightAceWraparound(t *testing.T) {
 	cards := buildCards([]string{"AS", "KS", "QC", "2H", "3D"})
 	hand, _ := SolveHand(cards)
-	_, castOkay := hand.(*Straight)
+	_, castOkay := hand.(Straight)
 
 	if castOkay {
 		t.Error("Ace should not wrap around to form straight")
@@ -183,7 +183,7 @@ func TestStraightAceWraparound(t *testing.T) {
 func TestFourKind(t *testing.T) {
 	cards := buildCards([]string{"AH", "JS", "JC", "JD", "JH", "3S"})
 	hand, _ := SolveHand(cards)
-	fourKind := hand.(*FourKind)
+	fourKind := hand.(FourKind)
 
 	if fourKind.rank() != fourKindRank {
 		t.Error()
@@ -199,7 +199,7 @@ func TestFourKind(t *testing.T) {
 func TestFourKindKickers(t *testing.T) {
 	cards := buildCards([]string{"2H", "2C", "2S", "2D", "AH", "AS", "5H"})
 	hand, _ := SolveHand(cards)
-	fourKind := hand.(*FourKind)
+	fourKind := hand.(FourKind)
 
 	if fourKind.kicker.value != Ace {
 		t.Error()
@@ -207,21 +207,21 @@ func TestFourKindKickers(t *testing.T) {
 
 	cards = buildCards([]string{"2H", "2C", "2S", "2D", "AH", "5S", "5H"})
 	hand, _ = SolveHand(cards)
-	fourKind = hand.(*FourKind)
+	fourKind = hand.(FourKind)
 	if fourKind.kicker.value != Ace {
 		t.Error()
 	}
 
 	cards = buildCards([]string{"2H", "2C", "2S", "2D", "AH", "5S", "6H"})
 	hand, _ = SolveHand(cards)
-	fourKind = hand.(*FourKind)
+	fourKind = hand.(FourKind)
 	if fourKind.kicker.value != Ace {
 		t.Error()
 	}
 
 	cards = buildCards([]string{"2H", "2C", "2S", "2D", "5H", "5S", "5H"})
 	hand, _ = SolveHand(cards)
-	fourKind = hand.(*FourKind)
+	fourKind = hand.(FourKind)
 	if fourKind.kicker.value != Five {
 		t.Error()
 	}
@@ -230,7 +230,7 @@ func TestFourKindKickers(t *testing.T) {
 func TestStraightFlush(t *testing.T) {
 	cards := buildCards([]string{"7H", "8H", "9H", "TH", "JH"})
 	hand, _ := SolveHand(cards)
-	straightFlush := hand.(*StraightFlush)
+	straightFlush := hand.(StraightFlush)
 
 	expected := buildCards([]string{"JH", "TH", "9H", "8H", "7H"})
 	if straightFlush.rank() != straightFlushRank {
@@ -244,7 +244,7 @@ func TestStraightFlush(t *testing.T) {
 func TestStraightFlushHard(t *testing.T) {
 	cards := buildCards([]string{"2H", "3H", "4H", "5H", "6H", "7C", "JH"})
 	hand, _ := SolveHand(cards)
-	straightFlush := hand.(*StraightFlush)
+	straightFlush := hand.(StraightFlush)
 
 	expected := buildCards([]string{"2H", "3H", "4H", "5H", "6H"})
 	if !reflect.DeepEqual(straightFlush.sortedCards, expected) {
@@ -255,7 +255,7 @@ func TestStraightFlushHard(t *testing.T) {
 func TestFullHouse(t *testing.T) {
 	cards := buildCards([]string{"2C", "2H", "2S", "5H", "5S", "AS", "KC"})
 	hand, _ := SolveHand(cards)
-	fullHouse := hand.(*FullHouse)
+	fullHouse := hand.(FullHouse)
 
 	if fullHouse.rank() != fullHouseRank {
 		t.Error()
@@ -271,7 +271,7 @@ func TestFullHouse(t *testing.T) {
 func TestThreeKind(t *testing.T) {
 	cards := buildCards([]string{"2C", "4H", "5S", "5H", "5S", "AS", "JC"})
 	hand, _ := SolveHand(cards)
-	threeKind := hand.(*ThreeKind)
+	threeKind := hand.(ThreeKind)
 
 	expectedKickers := buildCards([]string{"AS", "JC"})
 	if threeKind.rank() != threeKindRank {
@@ -288,7 +288,7 @@ func TestThreeKind(t *testing.T) {
 func TestTwoPair(t *testing.T) {
 	cards := buildCards([]string{"2C", "4H", "4S", "5H", "5S", "AS", "KC"})
 	hand, _ := SolveHand(cards)
-	twoPair := hand.(*TwoPair)
+	twoPair := hand.(TwoPair)
 
 	if twoPair.rank() != twoPairRank {
 		t.Error()
@@ -304,7 +304,7 @@ func TestTwoPair(t *testing.T) {
 func TestPair(t *testing.T) {
 	cards := buildCards([]string{"2C", "3H", "4S", "6H", "AH", "AS", "KC"})
 	hand, _ := SolveHand(cards)
-	pair := hand.(*Pair)
+	pair := hand.(Pair)
 
 	expectedKickers := buildCards([]string{"KC", "5H", "4S"})
 	if pair.rank() != pairRank {

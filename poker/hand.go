@@ -236,3 +236,77 @@ func SolveHand(cards []Card) (Hand, error) {
 
 	return HighCard{sortedCards: kickers[:5]}, nil
 }
+
+func kickerCompare(lhsKickers []Card, rhsKickers []Card) int {
+	if len(lhsKickers) != len(rhsKickers) {
+		panic("Cannot compare kickers when lengths are different")
+	}
+
+	for i, lhs := range lhsKickers {
+		if lhs.value != rhsKickers[i].value {
+			return int(rhsKickers[i].value - lhs.value)
+		}
+	}
+
+	return 0
+}
+
+// CompareHands takes two properly constructed hands and determines who wins.
+// Returns a negative number is lhs wins, positive if rhs win, and 0 if they chop
+func CompareHands(lhsHand Hand, rhsHand Hand) int {
+	if lhsHand.rank() < rhsHand.rank() {
+		return 1
+	} else if lhsHand.rank() > rhsHand.rank() {
+		return -1
+	}
+
+	switch lhs := lhsHand.(type) {
+	case StraightFlush:
+		rhs := rhsHand.(StraightFlush)
+		return int(rhs.sortedCards[0].value - lhs.sortedCards[0].value)
+	case FourKind:
+		rhs := rhsHand.(FourKind)
+		if lhs.fourPair[0].value != rhs.fourPair[0].value {
+			return int(rhs.fourPair[0].value - lhs.fourPair[0].value)
+		}
+		return int(rhs.kicker.value - lhs.kicker.value)
+	case FullHouse:
+		rhs := rhsHand.(FullHouse)
+		if lhs.threePair[0].value != rhs.threePair[0].value {
+			return int(rhs.threePair[0].value - lhs.threePair[0].value)
+		}
+		return int(rhs.twoPair[0].value - lhs.twoPair[0].value)
+	case Flush:
+		rhs := rhsHand.(Flush)
+		return int(rhs.sortedCards[0].value - lhs.sortedCards[0].value)
+	case Straight:
+		rhs := rhsHand.(Straight)
+		return int(rhs.sortedCards[0].value - lhs.sortedCards[0].value)
+	case ThreeKind:
+		rhs := rhsHand.(ThreeKind)
+		if lhs.threePair[0].value != rhs.threePair[0].value {
+			return int(rhs.threePair[0].value - lhs.threePair[0].value)
+		}
+		return kickerCompare(lhs.kickers, rhs.kickers)
+	case TwoPair:
+		rhs := rhsHand.(TwoPair)
+		if lhs.highPair[0].value != rhs.highPair[0].value {
+			return int(rhs.highPair[0].value - lhs.highPair[0].value)
+		}
+		if lhs.lowPair[0].value != rhs.lowPair[0].value {
+			return int(rhs.lowPair[0].value - lhs.lowPair[0].value)
+		}
+		return int(rhs.kicker.value - lhs.kicker.value)
+	case Pair:
+		rhs := rhsHand.(Pair)
+		if lhs.pair[0].value != rhs.pair[0].value {
+			return int(rhs.pair[0].value - lhs.pair[0].value)
+		}
+		return kickerCompare(lhs.kickers, rhs.kickers)
+	case HighCard:
+		rhs := rhsHand.(HighCard)
+		return kickerCompare(lhs.sortedCards, rhs.sortedCards)
+	default:
+		panic("Got a Hand which did not match any expected types")
+	}
+}

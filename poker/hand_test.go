@@ -331,3 +331,117 @@ func TestInvalidHandSize(t *testing.T) {
 		t.Error()
 	}
 }
+
+func TestCompareDiffHands(t *testing.T) {
+	pair, _ := SolveHand(buildCards([]string{"4H", "5C", "8S", "2D", "KS", "8C", "AD"}))
+	straight, _ := SolveHand(buildCards([]string{"4H", "5C", "8S", "2D", "KS", "3C", "6D"}))
+
+	if CompareHands(pair, straight) <= 0 {
+		t.Error()
+	}
+	if CompareHands(straight, pair) >= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareStraightFlush(t *testing.T) {
+	better, _ := SolveHand(buildCards([]string{"9H", "TH", "JH", "QH", "KH", "AS", "AH"}))
+	worse, _ := SolveHand(buildCards([]string{"9H", "TH", "JH", "QH", "KH", "2S", "8H"}))
+
+	if CompareHands(worse, better) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareAceWraparound(t *testing.T) {
+	better, _ := SolveHand(buildCards([]string{"2H", "3H", "4H", "5H", "9C", "6H", "7C"}))
+	worse, _ := SolveHand(buildCards([]string{"2H", "3H", "4H", "5H", "9C", "AH", "8S"}))
+
+	if CompareHands(worse, better) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareFourKind(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"4H", "4S", "4D", "4C", "9D", "TS"}))
+	h2, _ := SolveHand(buildCards([]string{"4H", "4S", "4D", "4C", "3D", "TH"}))
+
+	if CompareHands(h1, h2) != 0 {
+		t.Error()
+	}
+
+	h1, _ = SolveHand(buildCards([]string{"9H", "9S", "9D", "9C", "3D", "TH"}))
+
+	if CompareHands(h1, h2) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareFullHouse(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"4H", "4S", "4D", "9C", "9D"}))
+	h2, _ := SolveHand(buildCards([]string{"4H", "4S", "4D", "TC", "TD"}))
+	h3, _ := SolveHand(buildCards([]string{"5H", "5S", "5D", "9C", "9D"}))
+
+	if CompareHands(h1, h2) <= 0 || CompareHands(h1, h3) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareFlush(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"4H", "5H", "6H", "7H", "9H"}))
+	h2, _ := SolveHand(buildCards([]string{"4H", "5H", "6H", "7H", "AH"}))
+
+	if CompareHands(h1, h2) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareStraight(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"4C", "5H", "6S", "7D", "8H"}))
+	h2, _ := SolveHand(buildCards([]string{"5H", "6S", "7D", "8H", "9S"}))
+
+	if CompareHands(h1, h2) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareThreeKind(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"4C", "4H", "4S", "7D", "9S"}))
+	h2, _ := SolveHand(buildCards([]string{"5H", "5S", "5D", "8H", "9S"}))
+	h3, _ := SolveHand(buildCards([]string{"4H", "4S", "4D", "8H", "9S"}))
+
+	if CompareHands(h1, h2) <= 0 || CompareHands(h1, h3) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareTwoPair(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"4C", "4H", "6S", "6D", "9S"}))
+	h2, _ := SolveHand(buildCards([]string{"4H", "4S", "6D", "6H", "TS"}))
+	h3, _ := SolveHand(buildCards([]string{"4H", "4S", "7D", "7H", "9S"}))
+	h4, _ := SolveHand(buildCards([]string{"5H", "5S", "6D", "6H", "9S"}))
+
+	if CompareHands(h1, h2) <= 0 || CompareHands(h1, h3) <= 0 || CompareHands(h1, h4) <= 0 {
+		t.Error()
+	}
+}
+
+func TestComparePair(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"4C", "4H", "6S", "7D", "9S"}))
+	h2, _ := SolveHand(buildCards([]string{"4H", "4S", "6D", "8H", "9S"}))
+	h3, _ := SolveHand(buildCards([]string{"5H", "5S", "7D", "8H", "9S"}))
+
+	if CompareHands(h1, h2) <= 0 || CompareHands(h1, h3) <= 0 {
+		t.Error()
+	}
+}
+
+func TestCompareHighCard(t *testing.T) {
+	h1, _ := SolveHand(buildCards([]string{"2C", "4H", "6S", "7D", "9S"}))
+	h2, _ := SolveHand(buildCards([]string{"3C", "4S", "6D", "7H", "9S"}))
+	h1Chop, _ := SolveHand(buildCards([]string{"2C", "4S", "6C", "7D", "9H"}))
+
+	if CompareHands(h1, h2) <= 0 || CompareHands(h1, h1Chop) != 0 {
+		t.Error()
+	}
+}

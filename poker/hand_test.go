@@ -246,7 +246,7 @@ func TestStraightFlushHard(t *testing.T) {
 	hand, _ := SolveHand(cards)
 	straightFlush := hand.(StraightFlush)
 
-	expected := buildCards([]string{"2H", "3H", "4H", "5H", "6H"})
+	expected := buildCards([]string{"6H", "5H", "4H", "3H", "2H"})
 	if !reflect.DeepEqual(straightFlush.sortedCards, expected) {
 		t.Error()
 	}
@@ -306,14 +306,14 @@ func TestPair(t *testing.T) {
 	hand, _ := SolveHand(cards)
 	pair := hand.(Pair)
 
-	expectedKickers := buildCards([]string{"KC", "5H", "4S"})
+	expectedKickers := buildCards([]string{"KC", "6H", "4S"})
 	if pair.rank() != pairRank {
 		t.Error()
 	}
 	if !cardsMakePair(pair.pair, Ace, 2) {
 		t.Error()
 	}
-	if !reflect.DeepEqual(expectedKickers, pair.pair) {
+	if !reflect.DeepEqual(expectedKickers, pair.kickers) {
 		t.Error()
 	}
 }
@@ -372,7 +372,7 @@ func TestCompareFourKind(t *testing.T) {
 
 	h1, _ = SolveHand(buildCards([]string{"9H", "9S", "9D", "9C", "3D", "TH"}))
 
-	if CompareHands(h1, h2) <= 0 {
+	if CompareHands(h1, h2) >= 0 {
 		t.Error()
 	}
 }

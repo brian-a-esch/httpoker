@@ -1,0 +1,51 @@
+.card-small {
+  border: .2em solid black;
+  border-radius: 10%;
+  height: 100px;
+  width: 70px; /*70% of height*/
+  margin-right: 5px;
+  float: left;
+  background-color: white;
+}
+
+.card-value {
+  margin: 0;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: top left;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 0;
+}
+
+.card-suit {
+  text-align: top left;
+  margin: 0;
+  margin-left: 5px;
+  font-size: 1.4em;
+}
+
+.card-bottom {
+  transform: rotate(180deg);
+}
+
+.card-back {
+  width: 100%;
+}
+
+.red {
+  color: red;
+}
+
+.black {
+  color: black;
+}
+
+.poker-table {
+  background-color: green;
+  height: 555px; /* 0.555 of width */
+  width: 1000px;
+  border-radius: 375px; /* 0.375 of width */
+  margin: 0 auto;
+  border: 1em solid black;
+}

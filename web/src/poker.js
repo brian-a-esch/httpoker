@@ -20,7 +20,7 @@ function Card(props) {
       <div class="card-small">
         <img src={card_background} class="card-back" alt="Back of Card"/>
       </div>
-    )
+    );
   }
 
   var cardJsx = [];
@@ -44,12 +44,13 @@ function Card(props) {
   );
 }
 
-class Seat extends React.Component {
+class Player extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cards: [],
+      cards: props.cards,
       chips: props.chips,
+      name: props.name,
     };
   }
 
@@ -65,41 +66,140 @@ class Seat extends React.Component {
     }))
   }
 
+  getSeat() {
+    return this.state.seat;
+  }
+
   render() {
     return (
-      <div class="seat">
-        <div>
+      <div class="player-container">
+        <div class="player-cards">
           {this.state.cards.map((card, index) =>{
-            return <Card card/>
+            return (
+              <Card
+                faceDown={card.faceDown}
+                folded={card.folded}
+                value={card.value}
+                suit={card.suit}
+              />
+            );
           })}
         </div>
-        <div class="chip-count"></div>
+        <div class="player-dashboard">
+          <div class="player-name">{this.state.name}</div>
+          <div class="player-chips">{this.numberWithCommas(this.state.chips)}</div>
+        </div>
       </div>
     )
+  }
+
+  numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+}
+
+class ActionCenter extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return <div class="action-center"></div>;
   }
 }
 
 class PokerTable extends React.Component {
   constructor(props) {
     super(props);
+    this.seatStyles = [
+      {
+        "position": "absolute",
+        "left": "30%",
+        "top": "5%",
+      },
+      {
+        "position": "absolute",
+        "right": "30%",
+        "top": "5%",
+      },
+      {
+        "position": "absolute",
+        "right": "3%",
+        "top": "25%",
+      },
+      {
+        "position": "absolute",
+        "right": "3%",
+        "top": "55%",
+      },
+      {
+        "position": "absolute",
+        "right": "30%",
+        "bottom": "5%",
+      },
+      {
+        "position": "absolute",
+        "left": "30%",
+        "bottom": "5%",
+      },
+      {
+        "position": "absolute",
+        "left": "3%",
+        "top": "55%",
+      },
+      {
+        "position": "absolute",
+        "left": "3%",
+        "top": "25%",
+      },
+    ];
+
+    this.numSeats = 8;
+
+    const players = {};
+    for (var i = 0; i < this.numSeats; ++i) {
+      var cards = [];
+      if (i % 2 === 1) {
+        cards = [{faceDown: true}, {faceDown: true}];
+      } else {
+        cards = [];
+      }
+
+      players[i] = new Player({
+        cards: cards,
+        chips: 1000,
+        name: `Player ${i + 1}`,
+      });
+    }
+
+    this.state = {
+      emptySeats: {
+        0: {}
+      },
+      players: players,
+      actionCenter: new ActionCenter({}),
+    }
+  }
+
+  renderPlayer(seat, player) {
+    return (
+      <div style={this.seatStyles[seat]}>
+        {player.render()}
+      </div>
+    )
   }
 
   render() {
+      var playerJsx = [];
+      for (var seat in this.state.players) {
+        playerJsx.push(this.renderPlayer(seat, this.state.players[seat]));
+      }
+
       return (
-          <div>
-            <div>
-                <Card
-                  faceDown={true}
-                  value="K"
-                  suit={Suits.CLUBS}
-                />
-                <Card
-                  faceDown={false}
-                  value="K"
-                  suit={Suits.CLUBS}
-                />
-            </div>
+          <div class="poker-table-container">
             <div class="poker-table"></div>
+            {playerJsx}
+            {this.state.actionCenter.render()}
           </div>
       );
   }

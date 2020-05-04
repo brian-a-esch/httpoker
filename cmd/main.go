@@ -4,6 +4,8 @@ import (
 	"flag"
 	"log"
 	"net/http"
+
+	"github.com/brian-a-esch/httpoker/api"
 )
 
 type commandLineConfig struct {
@@ -17,10 +19,14 @@ func main() {
 	flag.StringVar(&config.hostport, "hostport", "localhost:8080", "Port to start server on")
 	flag.Parse()
 
+	gameMangager := api.NewGameManager()
+
 	log.Printf("Using build path %s\n", config.buildPath)
 	fs := http.FileServer(http.Dir(config.buildPath))
 	mux := http.NewServeMux()
 	mux.Handle("/", fs)
+	mux.HandleFunc("/api/v1/game/status", gameMangager.Game)
+	mux.HandleFunc("/api/v1/game/create", gameMangager.CreateGame)
 
 	serve := http.Server{
 		Addr:    config.hostport,

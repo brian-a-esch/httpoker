@@ -1,9 +1,9 @@
 // ========================================
 import React from 'react';
 import ReactDOM from 'react-dom';
-import PokerTable from './poker'
+import MainComponent from './poker'
 
 ReactDOM.render(
-  <PokerTable />,
+  <MainComponent />,
   document.getElementById('root')
 );

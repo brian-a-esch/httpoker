@@ -9,6 +9,8 @@ const (
 	handSize int32 = 5
 )
 
+// Hand is a interface which is returned by the SolveHand method. It represents
+// the different types of hands in poker
 type Hand interface {
 	rank() int32
 }
@@ -25,6 +27,7 @@ const (
 	straightFlushRank
 )
 
+// StraightFlush has sorted cards, starting with the best card in the straight flush
 type StraightFlush struct {
 	sortedCards []Card
 }
@@ -33,6 +36,7 @@ func (s StraightFlush) rank() int32 {
 	return straightFlushRank
 }
 
+// FourKind has the four cards and the kicker
 type FourKind struct {
 	fourPair []Card
 	kicker   Card
@@ -42,6 +46,7 @@ func (f FourKind) rank() int32 {
 	return fourKindRank
 }
 
+// FullHouse has the pair of three and two cards
 type FullHouse struct {
 	threePair []Card
 	twoPair   []Card
@@ -51,6 +56,7 @@ func (f FullHouse) rank() int32 {
 	return fullHouseRank
 }
 
+// Flush has a sorted set of cards, with the first being the best
 type Flush struct {
 	sortedCards []Card
 }
@@ -59,6 +65,7 @@ func (f Flush) rank() int32 {
 	return flushRank
 }
 
+// Straight has a sorted set of cards, with the first being the best
 type Straight struct {
 	sortedCards []Card
 }
@@ -67,6 +74,7 @@ func (s Straight) rank() int32 {
 	return straightRank
 }
 
+// ThreeKind has a three pair and the two best kickers, sorted by value
 type ThreeKind struct {
 	threePair []Card
 	kickers   []Card
@@ -76,6 +84,7 @@ func (t ThreeKind) rank() int32 {
 	return threeKindRank
 }
 
+// TwoPair has two pairs, a high and low, and the best possible kicker
 type TwoPair struct {
 	highPair []Card
 	lowPair  []Card
@@ -86,6 +95,7 @@ func (p TwoPair) rank() int32 {
 	return twoPairRank
 }
 
+// Pair has a pairs and a list of kickers sorted by value
 type Pair struct {
 	pair    []Card
 	kickers []Card
@@ -95,6 +105,7 @@ func (p Pair) rank() int32 {
 	return pairRank
 }
 
+// HighCard is a sorted list of cards, with the best being first
 type HighCard struct {
 	// TODO this needs to be sorted cards
 	sortedCards []Card

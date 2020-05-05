@@ -1,5 +1,6 @@
 package poker
 
+// Suit is the suit of a card
 type Suit int
 
 const (
@@ -19,6 +20,8 @@ func (s Suit) String() string {
 	}[s]
 }
 
+// CardValue is the value of a card, i.e. 2, Ace, King etc. We make them comparable
+// by performing less than on them
 type CardValue int
 
 const (
@@ -55,13 +58,15 @@ func (v CardValue) String() string {
 	}[v-2]
 }
 
+// Card is a struct with a suit and a value
 type Card struct {
 	suit  Suit
 	value CardValue
 }
 
 const (
+	// NumCardValues is the number of possible card values
 	NumCardValues = 13
-	NumSuits      = 4
+	// NumSuits is the umber of possible card suits
+	NumSuits = 4
 )
-

@@ -27,6 +27,7 @@ func main() {
 	mux.Handle("/", fs)
 	mux.HandleFunc("/api/v1/game/status", gameMangager.Game)
 	mux.HandleFunc("/api/v1/game/create", gameMangager.CreateGame)
+	mux.HandleFunc("/api/v1/game/add-player", gameMangager.CreateGame)
 
 	serve := http.Server{
 		Addr:    config.hostport,

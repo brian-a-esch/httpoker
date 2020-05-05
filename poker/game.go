@@ -15,6 +15,12 @@ type Player struct {
 	secret int
 }
 
+// Secret is a getter for the player secret. Should ONLY be used to give access to
+// a user who actually has access to this player in the game.
+func (player *Player) Secret() int {
+	return player.secret
+}
+
 // Game is the highest level object, representing and entire poker game
 type Game struct {
 	players      map[int]Player
@@ -53,7 +59,7 @@ func (game *Game) AddPlayer(name string, seat int) (Player, error) {
 		return Player{}, fmt.Errorf("Invalid seat number %d", seat)
 	}
 
-	if _, ok := game.players[seat]; !ok {
+	if _, ok := game.players[seat]; ok {
 		return Player{}, fmt.Errorf("Already have player at seat %d", seat)
 	}
 

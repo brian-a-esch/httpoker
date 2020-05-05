@@ -1,13 +1,18 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"sync"
 
 	"github.com/brian-a-esch/httpoker/poker"
 )
 
-// GameManager is the top level object which exposes some http endpoints
+// GameManager is the top level object which exposes some http endpoints. There is a mutex
+// since there is shared state which needs to be managed. Reader writer locks were considered,
+// and if this were to be used for more than a few games, then it would probably be implemented.
+// But since typically we only play one game at a time, having one lock for all the games is fine
+// and it avoids having to lock at the game level
 type GameManager struct {
 	sync.Mutex
 	gameCounter     int
@@ -54,21 +59,9 @@ func (manager *GameManager) Game(w http.ResponseWriter, r *http.Request) {
 	manager.Lock()
 	defer manager.Unlock()
 
-	game, ok := manager.games[get.GameID]
-	if !ok {
-		http.Error(w, "Could not find/load game", http.StatusBadRequest)
-		return
-	}
-
-	passprhase, ok := manager.gamePassphrases[get.GameID]
-	if !ok {
-		http.Error(w, "Could not find/load game", http.StatusBadRequest)
-		return
-	}
-
-	if get.Passphrase != passprhase {
-		http.Error(w, "Could not find/load game", http.StatusBadRequest)
-		return
+	game, err := manager.resolveGame(get.GameID, get.Passphrase)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	response := getGameResponse{
@@ -112,4 +105,66 @@ func (manager *GameManager) CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	response := getGameResponse{GameID: gameID, StarterChips: game.StarterChips(), BlindSize: game.BlindSize()}
 	sendJSONResponse(w, response)
+}
+
+type addPlayerRequest struct {
+	Name       string `json:"name"`
+	Passphrase string `json:"passphrase"`
+	Seat       int    `json:"seat"`
+	GameID     int    `json:"gameID"`
+}
+
+type addPlayerResponse struct {
+	Player poker.Player `json:"player"`
+	Secret int          `json:"secret"`
+}
+
+// AddPlayer adds a player to the game
+func (manager *GameManager) AddPlayer(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Must be POST", http.StatusMethodNotAllowed)
+	}
+
+	addRequest := addPlayerRequest{}
+	if ok := decodeJSONBody(w, r, &addRequest); !ok {
+		return
+	}
+
+	manager.Lock()
+	defer manager.Unlock()
+
+	game, err := manager.resolveGame(addRequest.GameID, addRequest.Passphrase)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	player, err := game.AddPlayer(addRequest.Name, addRequest.Seat)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	sendJSONResponse(w, addPlayerResponse{
+		Player: player,
+		Secret: player.Secret(),
+	})
+
+}
+
+func (manager *GameManager) resolveGame(gameID int, passphrase string) (*poker.Game, error) {
+	// The error functions here are intentionally obtuse
+	game, ok := manager.games[gameID]
+	if !ok {
+		return nil, errors.New("Could not find/load game")
+	}
+
+	foundPassphrase, ok := manager.gamePassphrases[gameID]
+	if !ok {
+		return nil, errors.New("Could not find/load game")
+	}
+
+	if passphrase != foundPassphrase {
+		return nil, errors.New("Could not find/load game")
+	}
+
+	return &game, nil
 }
